@@ -120,7 +120,7 @@ if __name__ == '__main__':
 
     concept_set  = {concept_name: neurons for concept_name, neurons in concept_names.items() if concept_name == args.concept_name}
 
-    model_ft = ConceptNetwork(concept_names=concept_names, freeze=False)
+    model_ft = ConceptNetwork(concept_names=concept_set, freeze=False)
 
     model_ft = model_ft.to(device)
 
