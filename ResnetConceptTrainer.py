@@ -141,7 +141,7 @@ if __name__ == '__main__':
 
     concept = args.concept_name
 
-    model_ft, results = train_model(model_ft, concept, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=1, phases=phases)
+    model_ft, results = train_model(model_ft, concept, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=24, phases=phases)
 
     torch.save(model_ft.state_dict(), os.path.join(results_dir, 'Renset2_' + concept + '.pth'))
     with open(os.path.join(results_dir, 'Renset2_' + concept + 'results.pth'), 'wb') as file:
