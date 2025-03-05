@@ -25,7 +25,7 @@ cudnn.benchmark = True
 # Read parameters
 parser = argparse.ArgumentParser(epilog='Configure the search')
 parser.add_argument('--concept_name', '-c', help='Concept Name', type=str, default='one_hot')
-parser.add_argument('--validate',     '-v', help='Vaidate'     , type=bool, default=False)
+parser.add_argument('--validate',     '-v', help='Vaidate'     , type=bool, default=True)
 args = parser.parse_args()
 
 
