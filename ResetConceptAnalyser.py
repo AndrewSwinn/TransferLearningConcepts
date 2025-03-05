@@ -19,14 +19,13 @@ if __name__ == '__main__':
         concept_names[name] = len(
             image_datasets['Train'].attributes.loc[(image_datasets['Train'].attributes['concept_name'] == name)])
 
-    for model_dict in os.listdir(os.path.join(os.getcwd(),
-                                              'results')):
+    for model_dict in os.listdir(os.path.join(os.getcwd(),'results')):
         correct, count = 0, 0
         concept_name = model_dict[7:-4]
         concept_set = {concept_name: concept_names[concept_name]}
         model_ft = ConceptNetwork(concept_names=concept_set, freeze=False)
         model_ft.load_state_dict(
-            torch.load(os.path.join(os.getcwd(), 'results', model_dict), weights_only=True))
+            torch.load(os.path.join(os.getcwd(), 'results', model_dict), weights_only=False))
         model_ft.to(device)
         for data_dict, inputs in dataloaders['Test']:
             inputs = inputs.to(device)

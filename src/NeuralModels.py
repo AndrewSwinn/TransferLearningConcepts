@@ -73,7 +73,7 @@ class ConceptNetwork(nn.Module):
         #Build the concept linear layers
         self.concept_names  = concept_names
         self.concept_preact = nn.ModuleDict({concept: nn.Linear(penultimate_neurons, neurons) for concept, neurons in self.concept_names.items()})
-        self.concept_layers = nn.ModuleDict({concept: nn.Softmax(dim=0) for concept, neurons in self.concept_names.items()})
+        #self.concept_layers = nn.ModuleDict({concept: nn.Softmax(dim=0) for concept, neurons in self.concept_names.items()})
         #self.concept_layer = nn.Linear(penultimate_neurons, 200)
 
 
