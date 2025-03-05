@@ -14,6 +14,7 @@ import os
 import argparse
 from PIL import Image
 from tempfile import TemporaryDirectory
+import pickle
 
 from src.Logger import Logger
 from src.DataLoader import CaltechBirdsDataset
@@ -38,7 +39,8 @@ def train_model(model, concept, criterion, optimizer, scheduler, num_epochs=25, 
                 model.train()  # Set model to training mode
             else:
                 model.eval()  # Set model to evaluate mode
-                all_labels, all_preds = [],[]
+
+            all_labels, all_preds = [],[]
 
             running_loss = 0.0
             running_corrects = 0
@@ -47,7 +49,7 @@ def train_model(model, concept, criterion, optimizer, scheduler, num_epochs=25, 
             for data_dict, inputs in dataloaders[phase]:
                 inputs = inputs.to(device)
                 labels = data_dict[concept]
-                if phase == 'Test': all_labels += [label.item() for label in labels]
+                all_labels += [label.item() for label in labels]
                 labels = labels.to(device)
 
                 # zero the parameter gradients
@@ -58,7 +60,7 @@ def train_model(model, concept, criterion, optimizer, scheduler, num_epochs=25, 
                 with torch.set_grad_enabled(phase == 'Train'):
                     outputs = model(inputs)[concept]
                     values, preds = torch.max(outputs, 1)
-                    if phase == 'Test': all_preds += [pred.item() for pred in preds]
+                    all_preds += [pred.item() for pred in preds]
 
                     loss = criterion(outputs, labels)
 
@@ -78,12 +80,12 @@ def train_model(model, concept, criterion, optimizer, scheduler, num_epochs=25, 
             epoch_acc = running_corrects.double() / dataset_sizes[phase]
 
             logger.log(f'Epoch: {epoch} Phase: {phase} Loss: {epoch_loss:.2f} Acc: {epoch_acc:.2f}')
-            if phase =='Test':
-                logger.log(all_labels[:20])
-                logger.log(all_preds[:20])
 
 
-    return model
+            results = {'labels': all_labels, 'predictions': all_preds}
+
+
+    return model, results
 
 if __name__ == '__main__':
 
@@ -139,6 +141,8 @@ if __name__ == '__main__':
 
     concept = args.concept_name
 
-    model_ft = train_model(model_ft, concept, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=24, phases=phases)
+    model_ft, results = train_model(model_ft, concept, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=24, phases=phases)
 
     torch.save(model_ft.state_dict(), os.path.join(results_dir, 'Renset2_' + concept + '.pth'))
+    with open(os.path.join(results_dir, 'Renset2_' + concept + 'results.pth'), 'wb') as file:
+        pickle.dump(results)
