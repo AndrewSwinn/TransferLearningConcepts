@@ -84,6 +84,9 @@ def train_model(model, concept, criterion, optimizer, scheduler, num_epochs=25, 
 
             results = {'labels': all_labels, 'predictions': all_preds}
 
+            with open(os.path.join(results_dir, 'Resnet2_' + concept + '_' + phase + '_results.pkl'), 'wb') as file:
+                pickle.dump(results, file)
+
 
     return model, results
 
@@ -143,6 +146,4 @@ if __name__ == '__main__':
 
     model_ft, results = train_model(model_ft, concept, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=24, phases=phases)
 
-    torch.save(model_ft.state_dict(), os.path.join(results_dir, 'Renset2_' + concept + '.pth'))
-    with open(os.path.join(results_dir, 'Renset2_' + concept + 'results.pth'), 'wb') as file:
-        pickle.dump(results, file)
+    torch.save(model_ft.state_dict(), os.path.join(results_dir, 'Resnet2_' + concept + '.pth'))
