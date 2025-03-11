@@ -18,6 +18,7 @@ drop_statements = [ "drop table if exists classes;",
                     "drop table if exists attributes;",
                     "drop table if exists images;",
                     "drop table if exists image_attributes;",
+                    "drop table if exists class_attribute_probabilities;"
                     ]
 
 create_statements = ["create table if not exists classes (class_id integer primary key, class_name text not null);",
@@ -25,6 +26,7 @@ create_statements = ["create table if not exists classes (class_id integer prima
                      "create table if not exists attributes (attribute_id integer not null, concept_id integer not null, value_id integer not null, value text not null);",
                      "create table if not exists images (image_id integer primary key, filename text not null, class_id integer, trainset integer, box_x integer, box_y integer, box_w integer, box_h integer);",
                      "create table if not exists image_attributes (image_id integer not null, attribute_id integer not null, present integer not null, certainty integer not null);",
+                     "create table if not exists class_attribute_probabilities (image_id integer not null, attribute_id integer not null, probability integer not null);"
                      ]
 
 def get_concept_id(concept):
@@ -42,10 +44,11 @@ def get_concept_id(concept):
 
     return concept_record[0]
 
-insert_class            = 'insert into classes (class_id, class_name) values (?,?)'
-insert_attribute        = 'insert into attributes (attribute_id, concept_id, value_id, value) values (?,?,?,?)'
-insert_image            = 'insert into images (image_id, filename, class_id, trainset, box_x, box_y, box_w, box_h) values (?,?, ?, ?, ?, ?, ?, ?)'
-insert_image_attributes = 'insert into image_attributes (image_id, attribute_id, present, certainty) values (?, ?, ?, ?)'
+insert_class                         = 'insert into classes (class_id, class_name) values (?,?)'
+insert_attribute                     = 'insert into attributes (attribute_id, concept_id, value_id, value) values (?,?,?,?)'
+insert_image                         = 'insert into images (image_id, filename, class_id, trainset, box_x, box_y, box_w, box_h) values (?,?, ?, ?, ?, ?, ?, ?)'
+insert_image_attributes              = 'insert into image_attributes (image_id, attribute_id, present, certainty) values (?, ?, ?, ?)'
+insert_class_attribute_probabilities = 'insert into class_attribute_probabilities (image_id, attribute_id, probability) values (?, ?, ?)'
 
 
 if __name__ == '__main__':
@@ -92,6 +95,15 @@ if __name__ == '__main__':
         record_split = image_attribute_label_record.replace('\n','').split(sep=" ")
         [image_id, attribute_id, present, certainty] = record_split[0:4]
         cursor.execute(insert_image_attributes, (image_id, attribute_id, present, certainty))
+
+    class_attributes_probabilities = open(os.path.join(data_dir, 'attributes', 'class_attribute_labels_continuous.txt'))
+    for i, attributes_probabilities in enumerate(class_attributes_probabilities):
+        class_id, attribute_id = i+1, 1
+        attributes_probabilities_list = attributes_probabilities.replace('\n','').split(sep=" ")
+        for j, probability in enumerate(attributes_probabilities_list):
+            attribute_id = j+1
+            cursor.execute(insert_class_attribute_probabilities, (class_id, attribute_id, probability))
+
 
 
     conn.commit()
