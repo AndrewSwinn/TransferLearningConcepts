@@ -30,6 +30,7 @@ create_statements = ["create table if not exists classes (class_id integer prima
                      "create table if not exists attributes (attribute_id integer not null, concept_id integer not null, value_id integer not null, value text not null);",
                      "create table if not exists images (image_id integer primary key, filename text not null, class_id integer, trainset integer, box_x integer, box_y integer, box_w integer, box_h integer);",
                      "create table if not exists image_attributes (image_id integer not null, attribute_id integer not null, present integer not null, certainty integer not null);",
+                     "create index if not exists image_attributes_u1 on image_attributes (image_id, attribute_id);",
                      "create table if not exists class_attribute_probabilities (class_id integer not null, attribute_id integer not null, probability float, naive_train_probability float, naive_test_probability float);",
                      "create index if not exists class_attribute_probabilities_n1 on class_attribute_probabilities (attribute_id);",
                      """create table if not exists nb_class_counts    
