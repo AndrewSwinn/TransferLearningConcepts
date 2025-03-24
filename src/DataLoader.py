@@ -134,6 +134,24 @@ class CaltechBirdsDataset(Dataset):
 
         return data.to_dict(), image
 
+    def getitem(self, idx):
+
+        # idx is the positional index in the filtered (train or test) images
+        data = self.filtered_data_dict.iloc[idx]
+
+        file_path  = os.path.join(self.data_dir, 'images', data['file_name'])
+        image      = Image.open(file_path)
+
+        if self.bounding:
+            x, y, w, h  = data['x'], data['y'], data['w'], data['h']
+            left, right, top, bottom = x, x + w, y, y + h
+            image = image.crop((left, top, right, bottom))
+
+        image = image.resize((300, 300)).convert(mode='RGB')
+
+        return data.to_dict(), image
+
+
 
 
 if __name__ == '__main__':
