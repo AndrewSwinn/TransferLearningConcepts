@@ -143,7 +143,7 @@ if __name__ == '__main__':
     data = CaltechBirdsDataset(train=False, bounding=True, augments=transforms)
 
     birds = CaltechBirdsDataset(train=False, bounding=True)
-    bird = birds[1][0]
+    bird = birds[0][0]
 
 
     print(bird)
