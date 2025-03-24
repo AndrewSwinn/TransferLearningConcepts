@@ -12,7 +12,6 @@ else:
     data_dir = '/home/bwc/ams90/datasets/caltecBirds/CUB_200_2011'
 
 
-
 drop_statements = [ "drop table if exists classes;",
                     "drop table if exists concepts;",
                     "drop table if exists attributes;",
@@ -26,7 +25,8 @@ create_statements = ["create table if not exists classes (class_id integer prima
                      "create table if not exists attributes (attribute_id integer not null, concept_id integer not null, value_id integer not null, value text not null);",
                      "create table if not exists images (image_id integer primary key, filename text not null, class_id integer, trainset integer, box_x integer, box_y integer, box_w integer, box_h integer);",
                      "create table if not exists image_attributes (image_id integer not null, attribute_id integer not null, present integer not null, certainty integer not null);",
-                     "create table if not exists class_attribute_probabilities (image_id integer not null, attribute_id integer not null, probability integer not null);"
+                     "create table if not exists class_attribute_probabilities (image_id integer not null, attribute_id integer not null, probability integer not null);",
+                     "create index if not exists image_idx on image_attributes (attribute_id, image_id);",
                      ]
 
 def get_concept_id(concept):
