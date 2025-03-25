@@ -13,6 +13,8 @@ if socket.gethostname() == 'LTSSL-sKTPpP5Xl':
     data_dir = 'C:\\Users\\ams90\\PycharmProjects\\ConceptsBirds\\data'
 elif socket.gethostname() == 'LAPTOP-NA88OLS1':
     data_dir = 'D:\\data\\caltecBirds\\CUB_200_2011'
+elif socket.gethostname() == 'andrew-ubuntu':
+    data_dir = '/home/andrew/Data/CUB_200_2011'
 else:
     data_dir = '/home/bwc/ams90/datasets/caltecBirds/CUB_200_2011'
 
@@ -25,24 +27,34 @@ class ImageViewer:
         self.conn = sqlite3.connect(database=os.path.join(data_dir, 'birds.db'))
 
         # Create the initial figure and axis
-        self.fig, self.ax = plt.subplots(1, 2, figsize=(16, 8))
+        self.fig, self.ax = plt.subplot_mosaic("AA;BC", height_ratios=[1,8], figsize=(16, 8))
 
-        data_dir, image = self.dataloader.getitem(self.index)
+        data_dict, image = self.dataloader.getitem(self.index)
+        self.display_menu()
         self.display_image(image)
-        self.display_text(data_dir['file_name'])
+        self.display_text(data_dict['file_name'])
 
         # Connect event handlers for key press
         self.fig.canvas.mpl_connect('key_press_event', self.on_key_press)
 
+
+
         # Display the plot
         plt.show()
+
+    def display_menu(self):
+
+        self.ax['A'].axis('off')
+
+
+
 
     def display_text(self, file_name):
 
         # Clear the axes and remove numbers/ticks
-        self.ax[1].clear()
-        self.ax[1].axis('off')
-        self.ax[1].set_title(file_name, family='monospace',  fontsize=10)
+        self.ax['C'].clear()
+        self.ax['C'].axis('off')
+        self.ax['C'].set_title(file_name, family='monospace',  fontsize=10)
 
         image_cursor = self.conn.cursor()
         (image_id, ) = image_cursor.execute("select image_id from images where filename = ?", (file_name,)).fetchone()
@@ -55,7 +67,7 @@ class ImageViewer:
         for (concept_id, concept_name) in concept_cursor.execute("""select   concept_id,
                                                                              concept_name
                                                                     from     concepts
-                                                                    order by concept_id""").fetchall():
+                                                                    order by concept_name""").fetchall():
             text += concept_name.ljust(21) + ': '
 
             for (value, certainty) in attribute_cursor.execute("""select  a.value,
@@ -74,15 +86,15 @@ class ImageViewer:
 
 
 
-        self.ax[1].text(0, 0.9, text,  va='top', family='monospace', linespacing=1.7, fontsize=8)
+        self.ax['C'].text(0, 0.9, text,  va='top', family='monospace', linespacing=1.7, fontsize=8)
 
     def display_image(self, image):
         """Displays the current image with its associated data."""
 
         # Clear the axes and remove numbers/ticks
-        self.ax[0].clear()
-        self.ax[0].axis('off')
-        self.ax[0].imshow(image)
+        self.ax['B'].clear()
+        self.ax['B'].axis('off')
+        self.ax['B'].imshow(image)
 
 
 
@@ -97,9 +109,9 @@ class ImageViewer:
 
 
         # Update the display with the new image and data
-        data_dir, image = self.dataloader.getitem(self.index)
+        data_dict, image = self.dataloader.getitem(self.index)
         self.display_image(image)
-        self.display_text(data_dir['file_name'])
+        self.display_text(data_dict['file_name'])
 
         # Redraw the canvas
         self.fig.canvas.draw()

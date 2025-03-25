@@ -10,6 +10,8 @@ if socket.gethostname() == 'LTSSL-sKTPpP5Xl':
     data_dir = 'C:\\Users\\ams90\\PycharmProjects\\ConceptsBirds\\data'
 elif socket.gethostname() == 'LAPTOP-NA88OLS1':
     data_dir = 'D:\\data\\caltecBirds\\CUB_200_2011'
+elif socket.gethostname() == 'andrew-ubuntu':
+    data_dir ='/home/andrew/Data/CUB_200_2011'
 else:
     data_dir = '/home/bwc/ams90/datasets/caltecBirds/CUB_200_2011'
 

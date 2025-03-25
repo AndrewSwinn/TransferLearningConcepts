@@ -13,6 +13,8 @@ if socket.gethostname() == 'LTSSL-sKTPpP5Xl':
     data_dir = 'C:\\Users\\ams90\\PycharmProjects\\ConceptsBirds\\data'
 elif socket.gethostname() == 'LAPTOP-NA88OLS1':
     data_dir = 'D:\\data\\caltecBirds\\CUB_200_2011'
+elif socket.gethostname() == 'andrew-ubuntu':
+    data_dir ='/home/andrew/Data/CUB_200_2011'
 else:
     data_dir = '/home/bwc/ams90/datasets/caltecBirds/CUB_200_2011'
 
@@ -76,7 +78,8 @@ class CaltechBirdsDataset(Dataset):
 
         image = image.resize((300, 300)).convert(mode='RGB')
 
-       # image = T.Compose(self.augments + self.preprocessing)(image)
+
+        image = T.Compose(self.augments + self.preprocessing)(image)
 
         return data_dict, image
 
