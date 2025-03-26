@@ -22,9 +22,18 @@ else:
 
 class ImageViewer:
     def __init__(self, data_dir):
+
         self.dataloader = CaltechBirdsDataset(bounding=False)
-        self.index      = 0
+
         self.conn = sqlite3.connect(database=os.path.join(data_dir, 'birds.db'))
+        cursor = self.conn.cursor()
+        self.class_dict = {class_id: class_name for (class_id, class_name) in cursor.execute("select class_id, class_name from classes").fetchall()}
+
+        cursor.close()
+
+        self.class_id = 1
+        self.images_list = self.get_indexes(self.class_id)
+        self.index = 0
 
         # Create the initial figure and axis
         self.fig, self.ax = plt.subplot_mosaic("AA;BC", height_ratios=[1,8], figsize=(16, 8))
@@ -37,15 +46,23 @@ class ImageViewer:
         # Connect event handlers for key press
         self.fig.canvas.mpl_connect('key_press_event', self.on_key_press)
 
-
-
         # Display the plot
         plt.show()
 
+    def get_indexes(self, class_id):
+        self.conn = sqlite3.connect(database=os.path.join(data_dir, 'birds.db'))
+        cursor = self.conn.cursor()
+        images_list = [image_id for (image_id, filename) in
+                           cursor.execute("select image_id, filename from images where class_id = ?", (class_id,)).fetchall()]
+        print(len(images_list), images_list)
+        return images_list
+
+
     def display_menu(self):
 
+        self.ax['A'].clear()
         self.ax['A'].axis('off')
-
+        self.ax['A'].text(0.5,0.5,self.class_dict[self.class_id], ha='center', family='monospace',  fontsize=12)
 
 
 
@@ -101,15 +118,31 @@ class ImageViewer:
     def on_key_press(self, event: KeyEvent):
         """Handles key press events to navigate through the images."""
         if event.key == 'right':  # Right arrow key
-            self.index = self.index + 1   # Go to next image
+            self.index = self.index + 1 # Go to next image
+            if self.index == len(self.images_list): self.index = 0
 
 
         elif event.key == 'left':  # Left arrow key
             self.index = self.index - 1  # Go to previous image
+            if self.index == - 1: self.index = len(self.images_list) - 1
+
+        elif event.key == 'up':  # Up arrow key
+            self.class_id = self.class_id - 1  # Go to next class
+            if self.class_id == 0: self.class_id = 200
+            self.images_list = self.get_indexes(self.class_id)
+            self.index = 0
+
+        elif event.key == 'down':  # Down arrow key
+            self.class_id = self.class_id + 1  # Go to previous class
+            if self.class_id == 201: self.class_id = 1
+            self.images_list = self.get_indexes(self.class_id)
+            self.index = 0
 
 
         # Update the display with the new image and data
-        data_dict, image = self.dataloader.getitem(self.index)
+        data_dict, image = self.dataloader.getitem(self.images_list[self.index]-1)
+
+        self.display_menu()
         self.display_image(image)
         self.display_text(data_dict['file_name'])
 

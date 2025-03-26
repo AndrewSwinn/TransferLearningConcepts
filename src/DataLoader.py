@@ -18,7 +18,7 @@ else:
     data_dir = '/home/bwc/ams90/datasets/caltecBirds/CUB_200_2011'
 
 class CaltechBirdsDataset(Dataset):
-    def __init__(self, train=True, bounding=False, normalize=True, augments=[]):
+    def __init__(self, train=None, bounding=False, normalize=True, augments=[]):
 
         super(CaltechBirdsDataset).__init__()
 
@@ -98,7 +98,10 @@ class CaltechBirdsDataset(Dataset):
             with open(os.path.join(data_dir, 'data_dict.pkl'), 'wb') as data_dict_file:
                 pickle.dump(archive, data_dict_file)
 
-        self.filtered_data_dict = data_dict.loc[data_dict['trainset']==int(train)]
+        if train is None:
+            self.filtered_data_dict = data_dict
+        else:
+            self.filtered_data_dict = data_dict.loc[data_dict['trainset']==int(train)]
 
         #Read lookup data into pandas tables
         self.classes            = pd.read_csv(os.path.join(data_dir, 'classes.txt'),                    sep=" ", index_col=[0], names=['class_id', 'class_name'])
