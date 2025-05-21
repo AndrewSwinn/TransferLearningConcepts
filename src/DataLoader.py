@@ -1,5 +1,5 @@
 import os
-import socket
+import configparser
 import pickle
 from PIL import Image, ImageOps, ImageEnhance
 import pandas as pd
@@ -8,14 +8,10 @@ import torch
 from torch.utils.data import Dataset
 from torchvision import transforms as T
 
-if socket.gethostname() == 'LTSSL-sKTPpP5Xl':
-    data_dir = 'C:\\Users\\ams90\\PycharmProjects\\ConceptsBirds\\data'
-elif socket.gethostname() == 'LAPTOP-NA88OLS1':
-    data_dir = 'D:\\data\\caltecBirds\\CUB_200_2011'
-elif socket.gethostname() == 'andrew-ubuntu':
-    data_dir ='/home/andrew/Data/CUB_200_2011'
-else:
-    data_dir = '/home/bwc/ams90/datasets/caltecBirds/CUB_200_2011'
+config = configparser.ConfigParser()
+config.read(os.path.join(os.pardir, 'config.ini'))
+
+data_dir = config['directories']['data']
 
 class CaltechBirdsDataset(Dataset):
     def __init__(self, train=None, bounding=False, normalize=True, augments=[]):
