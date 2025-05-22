@@ -1,4 +1,5 @@
 import os
+import sys
 import configparser
 import pickle
 from PIL import Image, ImageOps, ImageEnhance
@@ -7,11 +8,13 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 from torchvision import transforms as T
-
+print(os.path.join(sys.path[1], 'config.ini'))
 config = configparser.ConfigParser()
-config.read(os.path.join(os.pardir, 'config.ini'))
+config.read(os.path.join(sys.path[1], 'config.ini'))
 
-data_dir = config['directories']['data']
+#data_dir = config['directories']['data']
+data_dir = 'C:\\Users\\ams90\\PycharmProjects\\Data\\Birds'
+
 
 class CaltechBirdsDataset(Dataset):
     def __init__(self, train=None, bounding=False, normalize=True, augments=[]):

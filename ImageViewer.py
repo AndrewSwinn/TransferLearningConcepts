@@ -1,5 +1,6 @@
 import os
-import socket
+import sys
+import configparser
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 import matplotlib.pyplot as plt
@@ -9,14 +10,9 @@ from PIL import Image
 
 from src.DataLoader import CaltechBirdsDataset
 
-if socket.gethostname() == 'LTSSL-sKTPpP5Xl':
-    data_dir = 'C:\\Users\\ams90\\PycharmProjects\\ConceptsBirds\\data'
-elif socket.gethostname() == 'LAPTOP-NA88OLS1':
-    data_dir = 'D:\\data\\caltecBirds\\CUB_200_2011'
-elif socket.gethostname() == 'andrew-ubuntu':
-    data_dir = '/home/andrew/Data/CUB_200_2011'
-else:
-    data_dir = '/home/bwc/ams90/datasets/caltecBirds/CUB_200_2011'
+config = configparser.ConfigParser()
+config.read(os.path.join(sys.path[1], 'config.ini'))
+data_dir = config['directories']['data']
 
 
 
@@ -54,7 +50,7 @@ class ImageViewer:
         cursor = self.conn.cursor()
         images_list = [image_id for (image_id, filename) in
                            cursor.execute("select image_id, filename from images where class_id = ?", (class_id,)).fetchall()]
-        print(len(images_list), images_list)
+        #print(len(images_list), images_list)
         return images_list
 
 
